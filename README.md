@@ -8,6 +8,18 @@ A real-time video calling application with integrated sign language detection.
 - Visual feedback for detected signs
 - Support for multiple sign gestures
 
+## Deployment on Render
+
+1. Create a free account on [Render](https://render.com)
+2. Click "New +" and select "Web Service"
+3. Connect your GitHub repository
+4. Configure the deployment:
+   - Name: sign-language-detection
+   - Environment: Python 3
+   - Build Command: `pip install -r requirements.txt`
+   - Start Command: `gunicorn -k eventlet app:app`
+   - Plan: Free
+
 ## Setup Instructions
 
 1. Clone the repository:

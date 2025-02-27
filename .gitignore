@@ -14,3 +14,13 @@ venv.bak/
 *.log
 node_modules/
 .DS_Store
+
+# Large files and datasets
+processed_dataset/
+models/
+test_images/
+scripts/processed_dataset/
+*.keras
+*.h5
+*.model
+*.weights
