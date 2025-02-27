@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400px" height="400px" viewBox="0 0 400 400" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient x1="0%" y1="0%" x2="100%" y2="100%" id="handGradient">
+            <stop stop-color="#4285F4" offset="0%"/>
+            <stop stop-color="#34A853" offset="100%"/>
+        </linearGradient>
+    </defs>
+    <g stroke="none" fill="none">
+        <!-- Hand outline -->
+        <path d="M200,50 C300,50 350,150 350,250 C350,350 300,380 200,380 C100,380 50,350 50,250 C50,150 100,50 200,50" 
+              stroke="url(#handGradient)" 
+              stroke-width="2" 
+              fill="none"/>
+        <!-- Scanning effect -->
+        <line x1="50" y1="150" x2="350" y2="150" stroke="#4285F4" stroke-width="2" opacity="0.5">
+            <animate attributeName="y1" values="150;350;150" dur="3s" repeatCount="indefinite"/>
+            <animate attributeName="y2" values="150;350;150" dur="3s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.1;0.5;0.1" dur="3s" repeatCount="indefinite"/>
+        </line>
+        <!-- Recognition points -->
+        <circle cx="150" cy="200" r="4" fill="#EA4335">
+            <animate attributeName="r" values="4;6;4" dur="1s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="250" cy="200" r="4" fill="#FBBC05">
+            <animate attributeName="r" values="4;6;4" dur="1s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="200" cy="150" r="4" fill="#34A853">
+            <animate attributeName="r" values="4;6;4" dur="1s" repeatCount="indefinite"/>
+        </circle>
+    </g>
+</svg>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Language Recognition in Video Call</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sign Language Recognition</h1>
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="status-label">Connection:</span>
+                    <span id="connectionStatus" class="status-value">
+                        <i class="fas fa-times-circle"></i> Disconnected
+                    </span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Detection:</span>
+                    <span id="detectionStatus" class="status-value">
+                        <i class="fas fa-video-slash"></i> Inactive
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="video-section">
+                <!-- Local Video -->
+                <div class="video-container local">
+                    <h3>Your Video</h3>
+                    <div class="video-frame">
+                        <video id="localVideo" autoplay playsinline muted></video>
+                        <div class="video-overlay">
+                            <div class="detection-box"></div>
+                        </div>
+                        <div class="video-controls">
+                            <button id="startDetection" class="control-button">
+                                <i class="fas fa-play"></i> Start
+                            </button>
+                            <button id="stopDetection" class="control-button">
+                                <i class="fas fa-stop"></i> Stop
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Remote Video -->
+                <div class="video-container remote">
+                    <h3>Remote Video</h3>
+                    <div class="video-frame">
+                        <video id="remoteVideo" autoplay playsinline></video>
+                        <div class="video-overlay">
+                            <div class="detection-box"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Room Controls -->
+            <div class="room-controls">
+                <div class="room-info" id="roomInfo">Room ID: Not connected</div>
+                <div class="room-actions">
+                    <button id="createRoom" class="action-button">
+                        <i class="fas fa-plus-circle"></i> Create Room
+                    </button>
+                    <div class="join-room">
+                        <input type="text" id="roomInput" placeholder="Enter Room ID">
+                        <button id="joinRoom" class="action-button">
+                            <i class="fas fa-sign-in-alt"></i> Join Room
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detection Results -->
+            <div class="results-section">
+                <div class="detection-results">
+                    <h3>Detection Results</h3>
+                    <div id="detectionResult" class="detection-result">
+                        Waiting for detection...
+                    </div>
+                </div>
+                <div class="detection-history">
+                    <h3>History</h3>
+                    <div id="detectionHistory" class="history-list"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="{{ url_for('static', filename='webrtc.js') }}"></script>
+    <script src="{{ url_for('static', filename='detection.js') }}"></script>
+</body>
+</html>
