@@ -3,8 +3,11 @@ services:
     name: sign-language-detection
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn -k eventlet app:app
+    startCommand: python app.py
     envVars:
       - key: PYTHON_VERSION
-        value: 3.9.16
-    plan: free
+        value: 3.8.0
+      - key: PORT
+        value: 10000
+    healthCheckPath: /
+    autoDeploy: true
