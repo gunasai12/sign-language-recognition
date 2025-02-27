@@ -188,7 +188,7 @@ def detect_sign(data):
             emit('detection_result', result, room=room_id)
         else:
             emit('detection_result', result)
-            
+             
         logger.info(f"Detection: {result['label']} ({result['confidence']:.2f})")
 
     except Exception as e:
