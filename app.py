@@ -7,7 +7,6 @@ import base64
 import numpy as np
 from PIL import Image
 import io
-import cv2
 import tensorflow as tf
 import logging
 import uuid
@@ -104,47 +103,34 @@ def on_disconnect():
             logger.info(f"User {request.sid} left room: {room_id}")
 
 # Sign Detection
-def preprocess_image(image_data):
+def process_frame(frame_data):
     try:
-        # Remove data URL prefix if present
-        if ',' in image_data:
-            image_data = image_data.split(',')[1]
+        # Convert base64 image to numpy array
+        img_data = base64.b64decode(frame_data.split(',')[1])
+        img = Image.open(io.BytesIO(img_data))
+        img = img.resize((224, 224))  # Resize to model input size
+        img_array = np.array(img)
         
-        # Decode base64 image
-        image_bytes = base64.b64decode(image_data)
-        image = Image.open(io.BytesIO(image_bytes))
-        
-        # Convert to numpy array
-        image_np = np.array(image)
-        
-        # Convert BGR to RGB if needed
-        if len(image_np.shape) == 3 and image_np.shape[2] == 3:
-            image_np = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)
-        
-        # Extract ROI (center region)
-        height, width = image_np.shape[:2]
-        center_x, center_y = width // 2, height // 2
-        roi_size = min(width, height) // 2
-        
-        start_x = center_x - roi_size
-        start_y = center_y - roi_size
-        end_x = start_x + roi_size * 2
-        end_y = start_y + roi_size * 2
-        
-        roi = image_np[start_y:end_y, start_x:end_x]
-        
-        # Resize to model input size
-        resized = cv2.resize(roi, (64, 64))
-        
-        # Normalize
-        normalized = resized.astype(np.float32) / 255.0
+        # Normalize the image
+        img_array = img_array.astype('float32') / 255.0
         
         # Add batch dimension
-        preprocessed = np.expand_dims(normalized, axis=0)
+        img_array = np.expand_dims(img_array, axis=0)
         
-        return preprocessed
+        # Make prediction
+        predictions = model.predict(img_array)
+        predicted_class_index = np.argmax(predictions[0])
+        confidence = float(predictions[0][predicted_class_index])
+        
+        # Get the class label
+        predicted_class = class_names[predicted_class_index]
+        
+        return {
+            'label': predicted_class,
+            'confidence': confidence
+        }
     except Exception as e:
-        logger.error(f"Error preprocessing image: {e}")
+        logger.error(f"Error processing frame: {str(e)}")
         return None
 
 @socketio.on('detect_sign')
@@ -160,27 +146,12 @@ def detect_sign(data):
             emit('detection_error', {'error': 'No image data received'})
             return
 
-        # Preprocess image
-        preprocessed = preprocess_image(data['image'])
-        if preprocessed is None:
-            logger.error("Image preprocessing failed")
-            emit('detection_error', {'error': 'Image preprocessing failed'})
+        # Process frame
+        result = process_frame(data['image'])
+        if result is None:
+            logger.error("Frame processing failed")
+            emit('detection_error', {'error': 'Frame processing failed'})
             return
-
-        # Make prediction
-        prediction = model.predict(preprocessed, verbose=0)
-        predicted_class_idx = np.argmax(prediction[0])
-        confidence = float(prediction[0][predicted_class_idx])
-
-        if predicted_class_idx >= len(class_names):
-            logger.error(f"Invalid class index: {predicted_class_idx}")
-            emit('detection_error', {'error': 'Invalid prediction'})
-            return
-
-        result = {
-            'label': class_names[predicted_class_idx],
-            'confidence': confidence
-        }
 
         # Emit result to all users in the room
         room_id = data.get('roomId')
